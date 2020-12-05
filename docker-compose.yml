@@ -9,7 +9,7 @@ services:
     environment:
       - CLUSTER_NAME=test
     env_file:
-      - ./hadoop-hive.env
+      - ./config/hadoop-hive.env
     ports:
       - "9870:9870"
     networks:
@@ -23,7 +23,7 @@ services:
       - ~/bigdatavault/hadoop/dfs/data:/hadoop/dfs/data
       - ./bank:/bank
     env_file:
-      - ./hadoop-hive.env
+      - ./config/hadoop-hive.env
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     depends_on:
@@ -48,7 +48,7 @@ services:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-metastore
     env_file:
-      - ./hadoop-hive.env
+      - ./config/hadoop-hive.env
     command: /opt/hive/bin/hive --service metastore
     environment:
       SERVICE_PRECONDITION: "namenode:9870 datanode:9864 hive-metastore-postgresql:5432"
@@ -64,7 +64,7 @@ services:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-server
     env_file:
-      - ./hadoop-hive.env
+      - ./config/hadoop-hive.env
     environment:
       HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
       SERVICE_PRECONDITION: "hive-metastore:9083"
@@ -86,7 +86,7 @@ services:
     environment:
       - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
     env_file:
-      - ./hadoop-hive.env
+      - ./config/hadoop-hive.env
     networks:
       net_lucas:
         ipv4_address: 172.27.1.10
@@ -105,7 +105,7 @@ services:
     ports:
       - 8081:8081
     env_file:
-      - ./hadoop-hive.env
+      - ./config/hadoop-hive.env
     networks:
       net_lucas:
         ipv4_address: 172.27.1.11
@@ -127,7 +127,7 @@ services:
     ports:
       - 19090:8080
     env_file:
-      - ./hadoop-hive.env
+      - ./config/hadoop-hive.env
     volumes:
       - ~/bigdatavault/zeppelin/logs:/logs:rw
       - ~/bigdatavault/zeppelin/data:/data:rw
@@ -144,7 +144,7 @@ services:
       command: --init-file /data/application/init.sql
       volumes:
           - ~/bigdatavault/mysql/data:/var/lib/mysql
-          - ./init.sql:/data/application/init.sql
+          - ./config/init.sql:/data/application/init.sql
       environment:
           MYSQL_ROOT_USER: root
           MYSQL_ROOT_PASSWORD: secret
@@ -163,7 +163,7 @@ services:
       ports:
       - "8888:8888"
       volumes:
-        - ./hue-overrides.ini:/usr/share/hue/desktop/conf/z-hue.ini
+        - ./config/hue-overrides.ini:/usr/share/hue/desktop/conf/z-hue.ini
       depends_on:
       - "database"
       networks:
@@ -204,7 +204,7 @@ services:
   #   image: mongo
   #   container_name: mongo1
   #   volumes:
-  #     - ~/volumes/mdata:/data/db
+  #     - ~/bigdatavault/mdata:/data/db
   #   ports:
   #     - 27017:27017
   #   command: --auth
@@ -216,8 +216,8 @@ services:
   #   image: redis
   #   container_name: redis1
   #   volumes:
-  #     - ~/volumes/rdata:/data
-  #     - ./redis.conf:/etc/redis/redis.conf
+  #     - ~/bigdatavault/rdata:/data
+  #     - ./config/redis.conf:/etc/redis/redis.conf
   #   ports:
   #     - 16379:6379
   #   command: redis-server /etc/redis/redis.conf --appendonly yes
