@@ -4,3 +4,7 @@ mkdir -p ~/bigdatavault/zeppelin/logs
 mkdir -p ~/bigdatavault/zeppelin/data
 mkdir -p ~/bigdatavault/zeppelin/notebook
 mkdir -p ~/bigdatavault/mysql/data
+mkdir -p ~/bigdatavault/mdata
+mkdir -p ~/bigdatavault/rdata
+
+
