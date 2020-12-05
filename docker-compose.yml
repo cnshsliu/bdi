@@ -110,31 +110,31 @@ services:
       net_lucas:
         ipv4_address: 172.27.1.11
 
-  zeppelin:
-    image: lucas/zeppelin
-    container_name: zeppelin
-    environment:
-      ZEPPELIN_NOTEBOOK_DIR: "/notebook"
-      ZEPPELIN_LOG_DIR: "/logs"
-      CORE_CONF_fs_defaultFS: "hdfs://namenode:8020"
-      SPARK_MASTER: "spark://spark-master:7077"
-      MASTER: "spark://spark-master:7077"
-      SPARK_MASTER_URL: spark://spark-master:7077
-      ZEPPELIN_PORT: 8080
-      ZEPPELIN_JAVA_OPTS:
-        -Dspark.driver.memory=1g
-        -Dspark.executor.memory=2g
-    ports:
-      - 19090:8080
-    env_file:
-      - ./config/hadoop-hive.env
-    volumes:
-      - ~/bigdatavault/zeppelin/logs:/logs:rw
-      - ~/bigdatavault/zeppelin/data:/data:rw
-      - ~/bigdatavault/zeppelin/notebook:/notebook:rw
-    networks:
-      net_lucas:
-        ipv4_address: 172.27.1.12
+  # zeppelin:
+  #   image: lucas/zeppelin
+  #   container_name: zeppelin
+  #   environment:
+  #     ZEPPELIN_NOTEBOOK_DIR: "/notebook"
+  #     ZEPPELIN_LOG_DIR: "/logs"
+  #     CORE_CONF_fs_defaultFS: "hdfs://namenode:8020"
+  #     SPARK_MASTER: "spark://spark-master:7077"
+  #     MASTER: "spark://spark-master:7077"
+  #     SPARK_MASTER_URL: spark://spark-master:7077
+  #     ZEPPELIN_PORT: 8080
+  #     ZEPPELIN_JAVA_OPTS:
+  #       -Dspark.driver.memory=1g
+  #       -Dspark.executor.memory=2g
+  #   ports:
+  #     - 19090:8080
+  #   env_file:
+  #     - ./config/hadoop-hive.env
+  #   volumes:
+  #     - ~/bigdatavault/zeppelin/logs:/logs:rw
+  #     - ~/bigdatavault/zeppelin/data:/data:rw
+  #     - ~/bigdatavault/zeppelin/notebook:/notebook:rw
+  #   networks:
+  #     net_lucas:
+  #       ipv4_address: 172.27.1.12
 
   database:
       image: mysql:5.7
