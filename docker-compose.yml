@@ -110,31 +110,31 @@ services:
       net_lucas:
         ipv4_address: 172.27.1.11
 
-  # zeppelin:
-  #   image: lucas/zeppelin
-  #   container_name: zeppelin
-  #   environment:
-  #     ZEPPELIN_NOTEBOOK_DIR: "/notebook"
-  #     ZEPPELIN_LOG_DIR: "/logs"
-  #     CORE_CONF_fs_defaultFS: "hdfs://namenode:8020"
-  #     SPARK_MASTER: "spark://spark-master:7077"
-  #     MASTER: "spark://spark-master:7077"
-  #     SPARK_MASTER_URL: spark://spark-master:7077
-  #     ZEPPELIN_PORT: 8080
-  #     ZEPPELIN_JAVA_OPTS:
-  #       -Dspark.driver.memory=1g
-  #       -Dspark.executor.memory=2g
-  #   ports:
-  #     - 19090:8080
-  #   env_file:
-  #     - ./config/hadoop-hive.env
-  #   volumes:
-  #     - ~/bigdatavault/zeppelin/logs:/logs:rw
-  #     - ~/bigdatavault/zeppelin/data:/data:rw
-  #     - ~/bigdatavault/zeppelin/notebook:/notebook:rw
-  #   networks:
-  #     net_lucas:
-  #       ipv4_address: 172.27.1.12
+  zeppelin:
+    image: lucas/zeppelin
+    container_name: zeppelin
+    environment:
+      ZEPPELIN_NOTEBOOK_DIR: "/notebook"
+      ZEPPELIN_LOG_DIR: "/logs"
+      CORE_CONF_fs_defaultFS: "hdfs://namenode:8020"
+      SPARK_MASTER: "spark://spark-master:7077"
+      MASTER: "spark://spark-master:7077"
+      SPARK_MASTER_URL: spark://spark-master:7077
+      ZEPPELIN_PORT: 8080
+      ZEPPELIN_JAVA_OPTS:
+        -Dspark.driver.memory=1g
+        -Dspark.executor.memory=2g
+    ports:
+      - 19090:8080
+    env_file:
+      - ./config/hadoop-hive.env
+    volumes:
+      - ~/bigdatavault/zeppelin/logs:/logs:rw
+      - ~/bigdatavault/zeppelin/data:/data:rw
+      - ~/bigdatavault/zeppelin/notebook:/notebook:rw
+    networks:
+      net_lucas:
+        ipv4_address: 172.27.1.12
 
   database:
       image: mysql:5.7
@@ -166,6 +166,7 @@ services:
         - ./config/hue-overrides.ini:/usr/share/hue/desktop/conf/z-hue.ini
       depends_on:
       - "database"
+      - "hive-server"
       networks:
         net_lucas:
           ipv4_address: 172.27.1.13
@@ -187,6 +188,8 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: 172.27.1.16
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - "zookeeper"
     networks:
       net_lucas:
         ipv4_address: 172.27.1.16  
@@ -240,6 +243,17 @@ services:
     networks:
       net_lucas:
         ipv4_address: 172.27.1.20
+
+  helloworld:
+          image: hello-world
+          container_name: helloworld
+          depends_on:
+                - spark-master
+                - spark-worker-1
+                - datanode
+                - hue
+                - kafka
+
 
 
 networks:
