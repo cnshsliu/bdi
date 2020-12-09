@@ -94,8 +94,6 @@ services:
   spark-worker-1:
     image: bde2020/spark-worker:3.0.1-hadoop3.2
     container_name: spark-worker-1
-    depends_on:
-      - spark-master
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
@@ -109,6 +107,23 @@ services:
     networks:
       net_lucas:
         ipv4_address: 172.27.1.11
+
+  spark-worker-2:
+    image: bde2020/spark-worker:3.0.1-hadoop3.2
+    container_name: spark-worker-2
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+      - HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore
+    depends_on:
+      - spark-worker-1
+    ports:
+      - 8082:8082
+    env_file:
+      - ./config/hadoop-hive.env
+    networks:
+      net_lucas:
+        ipv4_address: 172.27.1.12
 
   zeppelin:
     image: lucas/zeppelin
@@ -134,7 +149,7 @@ services:
       - ~/bigdatavault/zeppelin/notebook:/notebook:rw
     networks:
       net_lucas:
-        ipv4_address: 172.27.1.12
+        ipv4_address: 172.27.1.13
 
   database:
       image: mysql:5.7
@@ -169,7 +184,7 @@ services:
       - "hive-server"
       networks:
         net_lucas:
-          ipv4_address: 172.27.1.13
+          ipv4_address: 172.27.1.15
 
   zookeeper:
     image: zookeeper:3.6
@@ -178,7 +193,7 @@ services:
       - "2181:2181"
     networks:
       net_lucas:
-        ipv4_address: 172.27.1.15
+        ipv4_address: 172.27.1.16
 
   kafka:
     image: wurstmeister/kafka:2.12-2.5.0
@@ -186,13 +201,48 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 172.27.1.16
+      KAFKA_ADVERTISED_HOST_NAME: 172.27.1.32
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_BROKER_ID: 2
+    depends_on:
+      - "kafka-4"
+    networks:
+      net_lucas:
+        ipv4_address: 172.27.1.32
+
+  kafka-3:
+    image: wurstmeister/kafka:2.12-2.5.0
+    container_name: kafka-3
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.27.1.33
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_BROKER_ID: 3
+    depends_on:
     depends_on:
       - "zookeeper"
     networks:
       net_lucas:
-        ipv4_address: 172.27.1.16  
+        ipv4_address: 172.27.1.33
+
+  kafka-4:
+    image: wurstmeister/kafka:2.12-2.5.0
+    container_name: kafka-4
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.27.1.34
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_BROKER_ID: 4
+    depends_on:
+      - "kafka-3"
+    networks:
+      net_lucas:
+        ipv4_address: 172.27.1.34
 
   streamsets:
     image: streamsets/datacollector:3.13.0-latest
@@ -201,7 +251,7 @@ services:
       - "18630:18630"
     networks:
       net_lucas:
-        ipv4_address: 172.27.1.17  
+        ipv4_address: 172.27.1.18  
 
   # mongodb:
   #   image: mongo
@@ -213,7 +263,7 @@ services:
   #   command: --auth
   #   networks:
   #     net_lucas:
-  #       ipv4_address: 172.27.1.18
+  #       ipv4_address: 172.27.1.19
 
   # redis:
   #   image: redis
@@ -226,7 +276,7 @@ services:
   #   command: redis-server /etc/redis/redis.conf --appendonly yes
   #   networks:
   #     net_lucas:
-  #       ipv4_address: 172.27.1.19
+  #       ipv4_address: 172.27.1.20
 
   kylin:
     image: apachekylin/apache-kylin-standalone:3.1.0
@@ -242,14 +292,28 @@ services:
     mem_reservation: 2G
     networks:
       net_lucas:
-        ipv4_address: 172.27.1.20
+        ipv4_address: 172.27.1.21
 
-  helloworld:
+
+  presto:
+    image: prestosql/presto
+    container_name: presto
+    ports:
+      - "18080:8080"
+    volumes:
+      - ./etc/hive.properties:/usr/lib/presto/default/etc/catalog/hive.properties
+      - ./etc/hadoop/core-site.xml:/etc/hadoop/core-site.xml
+      - ./etc/hadoop/hdfs-site.xml:/etc/hadoop/hdfs-site.xml
+    networks:
+      net_lucas:
+        ipv4_address: 172.27.1.22
+
+
+  coreonly:
           image: hello-world
           container_name: helloworld
           depends_on:
-                - spark-master
-                - spark-worker-1
+                - spark-worker-2
                 - datanode
                 - hue
                 - kafka
