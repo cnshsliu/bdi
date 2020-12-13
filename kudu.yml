@@ -21,6 +21,8 @@ services:
     ports:
       - "7051:7051"
       - "8051:8051"
+    networks: 
+      - bdi_net_lucas
     command: ["master"]
     volumes:
       - kudu-master-1:/var/lib/kudu
@@ -42,6 +44,8 @@ services:
     ports:
       - "7151:7151"
       - "8151:8151"
+    networks: 
+      - bdi_net_lucas
     command: ["master"]
     volumes:
       - kudu-master-2:/var/lib/kudu
@@ -61,6 +65,8 @@ services:
     ports:
       - "7251:7251"
       - "8251:8251"
+    networks: 
+      - bdi_net_lucas
     command: ["master"]
     volumes:
       - kudu-master-3:/var/lib/kudu
@@ -84,6 +90,8 @@ services:
     ports:
       - "7050:7050"
       - "8050:8050"
+    networks: 
+      - bdi_net_lucas
     command: ["tserver"]
     volumes:
       - kudu-tserver-1:/var/lib/kudu
@@ -107,6 +115,8 @@ services:
     ports:
       - "7150:7150"
       - "8150:8150"
+    networks: 
+      - bdi_net_lucas
     command: ["tserver"]
     volumes:
       - kudu-tserver-2:/var/lib/kudu
@@ -130,6 +140,8 @@ services:
     ports:
       - "7250:7250"
       - "8250:8250"
+    networks: 
+      - bdi_net_lucas
     command: ["tserver"]
     volumes:
       - kudu-tserver-3:/var/lib/kudu
@@ -153,6 +165,8 @@ services:
     ports:
       - "7350:7350"
       - "8350:8350"
+    networks: 
+      - bdi_net_lucas
     command: ["tserver"]
     volumes:
       - kudu-tserver-4:/var/lib/kudu
@@ -176,6 +190,8 @@ services:
     ports:
       - "7450:7450"
       - "8450:8450"
+    networks: 
+      - bdi_net_lucas
     command: ["tserver"]
     volumes:
       - kudu-tserver-5:/var/lib/kudu
@@ -190,6 +206,11 @@ services:
         --webserver_doc_root=/opt/kudu/www
         --stderrthreshold=0
         --use_hybrid_clock=false
+
+networks:
+  bdi_net_lucas:
+    external: true
+
 volumes:
   kudu-master-1:
   kudu-master-2:
