@@ -9,7 +9,7 @@ services:
     environment:
       - CLUSTER_NAME=test
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     ports:
       - "9870:9870"
     networks:
@@ -21,9 +21,8 @@ services:
     container_name: datanode
     volumes:
       - ~/bigdatavault/hadoop/dfs/data:/hadoop/dfs/data
-      - ./bank:/bank
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     depends_on:
@@ -48,7 +47,7 @@ services:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-metastore
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     command: /opt/hive/bin/hive --service metastore
     environment:
       SERVICE_PRECONDITION: "namenode:9870 datanode:9864 hive-metastore-postgresql:5432"
@@ -64,7 +63,7 @@ services:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-server
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     environment:
       HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
       SERVICE_PRECONDITION: "hive-metastore:9083"
@@ -86,7 +85,7 @@ services:
     environment:
       - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     depends_on:
        - datanode
     networks:
@@ -105,7 +104,7 @@ services:
     ports:
       - 8081:8081
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     networks:
       net_lucas:
         ipv4_address: 172.27.1.11
@@ -122,7 +121,7 @@ services:
     ports:
       - 8082:8082
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     networks:
       net_lucas:
         ipv4_address: 172.27.1.12
@@ -144,7 +143,7 @@ services:
     ports:
       - 19090:8080
     env_file:
-      - ./config/hadoop-hive.env
+      - ~/bdi/config/hadoop-hive.env
     volumes:
       - ~/bigdatavault/zeppelin/logs:/logs:rw
       - ~/bigdatavault/zeppelin/data:/data:rw
@@ -153,15 +152,16 @@ services:
       net_lucas:
         ipv4_address: 172.27.1.13
 
-  database:
+  mysql:
       image: mysql:5.7
-      container_name: database
+      container_name: db_mysql
       ports:
           - "33061:3306"
       command: --init-file /data/application/init.sql
       volumes:
           - ~/bigdatavault/mysql/data:/var/lib/mysql
-          - ./config/init.sql:/data/application/init.sql
+          - ~/bdi/config/init.sql:/data/application/init.sql
+          - ~/bdi/etc/mysql/mysql.conf.d/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
       environment:
           MYSQL_ROOT_USER: root
           MYSQL_ROOT_PASSWORD: secret
@@ -180,9 +180,9 @@ services:
       ports:
       - "8888:8888"
       volumes:
-        - ./config/hue-overrides.ini:/usr/share/hue/desktop/conf/z-hue.ini
+        - ~/bdi/config/hue-overrides.ini:/usr/share/hue/desktop/conf/z-hue.ini
       depends_on:
-      - "database"
+      - "mysql"
       - "hive-server"
       networks:
         net_lucas:
@@ -224,7 +224,6 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
       KAFKA_BROKER_ID: 3
     depends_on:
-    depends_on:
       - "zookeeper"
     networks:
       net_lucas:
@@ -255,30 +254,30 @@ services:
       net_lucas:
         ipv4_address: 172.27.1.18  
 
-  # mongodb:
-  #   image: mongo
-  #   container_name: mongo1
-  #   volumes:
-  #     - ~/bigdatavault/mdata:/data/db
-  #   ports:
-  #     - 27017:27017
-  #   command: --auth
-  #   networks:
-  #     net_lucas:
-  #       ipv4_address: 172.27.1.19
+  mongodb:
+    image: mongo
+    container_name: mongo1
+    volumes:
+      - ~/bigdatavault/mdata:/data/db
+    ports:
+      - 27017:27017
+    command: --auth
+    networks:
+      net_lucas:
+        ipv4_address: 172.27.1.19
 
-  # redis:
-  #   image: redis
-  #   container_name: redis1
-  #   volumes:
-  #     - ~/bigdatavault/rdata:/data
-  #     - ./config/redis.conf:/etc/redis/redis.conf
-  #   ports:
-  #     - 16379:6379
-  #   command: redis-server /etc/redis/redis.conf --appendonly yes
-  #   networks:
-  #     net_lucas:
-  #       ipv4_address: 172.27.1.20
+  redis:
+    image: redis
+    container_name: redis1
+    volumes:
+      - ~/bigdatavault/rdata:/data
+      - ~/bdi/config/redis.conf:/etc/redis/redis.conf
+    ports:
+      - 16379:6379
+    command: redis-server /etc/redis/redis.conf --appendonly yes
+    networks:
+      net_lucas:
+        ipv4_address: 172.27.1.20
 
   kylin:
     image: apachekylin/apache-kylin-standalone:3.1.0
@@ -301,17 +300,29 @@ services:
     ports:
       - "18080:8080"
     volumes:
-      - ./etc/hive.properties:/usr/lib/presto/default/etc/catalog/hive.properties
-      - ./etc/kudu.properties:/usr/lib/presto/default/etc/catalog/kudu.properties
-      - ./etc/hadoop/core-site.xml:/etc/hadoop/core-site.xml
-      - ./etc/hadoop/hdfs-site.xml:/etc/hadoop/hdfs-site.xml
+      - ~/bdi/etc/hive.properties:/usr/lib/presto/default/etc/catalog/hive.properties
+      - ~/bdi/etc/kudu.properties:/usr/lib/presto/default/etc/catalog/kudu.properties
+      - ~/bdi/etc/hadoop/core-site.xml:/etc/hadoop/core-site.xml
+      - ~/bdi/etc/hadoop/hdfs-site.xml:/etc/hadoop/hdfs-site.xml
     networks:
       net_lucas:
         ipv4_address: 172.27.1.22
 
+  nifi:
+    image: apache/nifi:latest
+    container_name: nifi
+    ports: 
+      - "19090:9090"
+    environment:
+      - NIFI_WEB_HTTP_PORT=9090
+    volumes:
+      - ~/bdi/resources/:/bdi/resources/
+    networks:
+      - net_lucas
 
   kudu-master-1:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-master-1
     ports:
       - "7051:7051"
       - "8051:8051"
@@ -335,6 +346,7 @@ services:
         --use_hybrid_clock=false
   kudu-master-2:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-master-2
     ports:
       - "7151:7151"
       - "8151:8151"
@@ -356,6 +368,7 @@ services:
         --use_hybrid_clock=false
   kudu-master-3:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-master-3
     ports:
       - "7251:7251"
       - "8251:8251"
@@ -377,6 +390,7 @@ services:
         --use_hybrid_clock=false
   kudu-tserver-1:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-tserver-1
     depends_on:
       - kudu-master-1
       - kudu-master-2
@@ -402,6 +416,7 @@ services:
         --use_hybrid_clock=false
   kudu-tserver-2:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-tserver-2
     depends_on:
       - kudu-master-1
       - kudu-master-2
@@ -427,6 +442,7 @@ services:
         --use_hybrid_clock=false
   kudu-tserver-3:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-tserver-3
     depends_on:
       - kudu-master-1
       - kudu-master-2
@@ -452,6 +468,7 @@ services:
         --use_hybrid_clock=false
   kudu-tserver-4:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-tserver-4
     depends_on:
       - kudu-master-1
       - kudu-master-2
@@ -477,6 +494,7 @@ services:
         --use_hybrid_clock=false
   kudu-tserver-5:
     image: apache/kudu:${KUDU_QUICKSTART_VERSION:-latest}
+    container_name: kudu-tserver-5
     depends_on:
       - kudu-master-1
       - kudu-master-2

@@ -1,6 +1,9 @@
 # BigData infrastructure with Docker
 
 
+Compiled by Lucas Liukehong <liukehong@gmail.com>
+
+
 A development big data infrastructure with docker-compose.
 In this platform, you will have  HDFS, Hive, Spark, Hue, Zeppelin, Kafka, Zookeeper, and Streamsets connected together.
 

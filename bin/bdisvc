@@ -1,0 +1,24 @@
+if [ $# == 0 ]; then
+  grep container_name  ~/bdi/docker-compose.yml |awk '{print $2}'
+elif [ $# == 1 ]; then
+  if [ $1 == "up" ]; then
+    cd ~/bdi; docker-compose up -d
+  elif [ $1 == "down" ]; then
+    cd ~/bdi; docker-compose down
+  else
+    cd ~/bdi; docker-compose up -d $1
+  fi
+elif [ $# == 2 ]; then
+  if [ $1 == "up" ]; then
+    cd ~/bdi; docker-compose up -d $2
+  elif [ $1 == "start" ]; then
+    cd ~/bdi; docker-compose up -d $2
+  elif [ $1 == "down" ]; then
+    cd ~/bdi; docker stop $(docker ps -aqf "name=$2");
+  elif [ $1 == "stop" ]; then
+    cd ~/bdi; docker stop $(docker ps -aqf "name=$2");
+  elif [ $1 == "restart" ]; then
+    cd ~/bdi; docker stop $(docker ps -aqf "name=$2");
+    cd ~/bdi; docker-compose up -d $2
+  fi
+fi

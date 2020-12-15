@@ -1,0 +1,5 @@
+if [ $# == 0 ]; then
+  echo "Usage: $0 container_name"
+else
+  docker exec -it $(docker ps -aqf "name=$1") bash 2>/dev/null
+fi
