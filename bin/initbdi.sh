@@ -20,6 +20,8 @@ printf "Done.\n"
 if [ ! -d ~/bdi/resources ]; then
   printf "Prepare bdi/resources..."
   mkdir -p ~/bdi/resources
+  # 虽然通过VirtualBox Share Folder做了映射，但进入到container中
+  # 不能访问这个映射目录，所以，要全量拷贝
   cp ~/host_resources/* ~/bdi/resources/
   printf "Done.\n"
 fi
