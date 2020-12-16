@@ -40,7 +40,7 @@ else
   git clone git@github.com:cnshsliu/myBdApp.git
   printf "Done.\n"
   printf "Prepare myBdApp resources..."
-  mkdir ~/myBdApp/resources
+  mkdir -p ~/myBdApp/resources
   cp ~/host_resources/hadoop-3.2.1.tar.gz ~/myBdApp/resources
   cp ~/host_resources/sbt-1.4.5.tgz ~/myBdApp/resources
   printf "Done.\n"
@@ -56,7 +56,7 @@ if [ -d ~/lucas_zeppelin ]; then
 else
   printf "Download lucas_zeppelin..."
   cd
-  git clone https://github.com/cnshsliu/lucas_zeppelin.git
+  git clone git@github.com:cnshsliu/lucas_zeppelin.git
   printf "Done.\n"
   printf "Prepare lucas_zeppelin resources..."
   mkdir ~/lucas_zeppelin/resources
