@@ -5,6 +5,8 @@ elif [ $# == 1 ]; then
     cd ~/bdi; docker-compose up -d
   elif [ $1 == "down" ]; then
     cd ~/bdi; docker-compose down
+  elif [ $1 == "spark" ]; then
+    cd ~/bdi; docker-compose up -d spark-worker-2
   else
     cd ~/bdi; docker-compose up -d $1
   fi
