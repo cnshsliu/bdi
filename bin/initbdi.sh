@@ -17,21 +17,13 @@ mkdir -p ~/bigdatavault/mdata
 mkdir -p ~/bigdatavault/rdata
 printf "Done.\n"
 
-if [ ! -d ~/bdi/resources ]; then
-  printf "Prepare bdi/resources..."
-  mkdir -p ~/bdi/resources
-  # 虽然通过VirtualBox Share Folder做了映射，但进入到container中
-  # 不能访问这个映射目录，所以，要全量拷贝
-  cp ~/host_resources/* ~/bdi/resources/
-  printf "Done.\n"
-fi
 
 if [ -d ~/myBdApp ]; then
    if [ ! -f ~/myBdApp/resources/hadoop-3.2.1.tar.gz ]; then
       printf "Prepare myBdApp resources..."
       mkdir -p ~/myBdApp/resources/
-      cp ~/host_resources/hadoop-3.2.1.tar.gz ~/myBdApp/resources
-      cp ~/host_resources/sbt-1.4.5.tgz ~/myBdApp/resources
+      cp ~/bdi/resources/hadoop-3.2.1.tar.gz ~/myBdApp/resources
+      cp ~/bdi/resources/sbt-1.4.5.tgz ~/myBdApp/resources
       printf "Done.\n"
    fi
 else
@@ -41,8 +33,8 @@ else
   printf "Done.\n"
   printf "Prepare myBdApp resources..."
   mkdir -p ~/myBdApp/resources
-  cp ~/host_resources/hadoop-3.2.1.tar.gz ~/myBdApp/resources
-  cp ~/host_resources/sbt-1.4.5.tgz ~/myBdApp/resources
+  cp ~/bdi/resources/hadoop-3.2.1.tar.gz ~/myBdApp/resources
+  cp ~/bdi/resources/sbt-1.4.5.tgz ~/myBdApp/resources
   printf "Done.\n"
 fi
 
@@ -50,7 +42,7 @@ if [ -d ~/lucas_zeppelin ]; then
    if [ ! -f ~/lucas_zeppelin/resources/spark-3.0.1-bin-hadoop3.2.tgz ]; then
       printf "Prepare lucas_zeppelin resources..."
       mkdir -p ~/lucas_zeppelin/resources/
-      cp ~/host_resources/spark-3.0.1-bin-hadoop3.2.tgz  ~/lucas_zeppelin/resources
+      cp ~/bdi/resources/spark-3.0.1-bin-hadoop3.2.tgz  ~/lucas_zeppelin/resources
       printf "Done.\n"
    fi
 else
@@ -60,6 +52,6 @@ else
   printf "Done.\n"
   printf "Prepare lucas_zeppelin resources..."
   mkdir ~/lucas_zeppelin/resources
-  cp ~/host_resources/spark-3.0.1-bin-hadoop3.2.tgz  ~/lucas_zeppelin/resources
+  cp ~/bdi/resources/spark-3.0.1-bin-hadoop3.2.tgz  ~/lucas_zeppelin/resources
   printf "Done.\n"
 fi
