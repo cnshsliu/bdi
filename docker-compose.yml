@@ -522,6 +522,20 @@ services:
         --webserver_doc_root=/opt/kudu/www
         --stderrthreshold=0
         --use_hybrid_clock=false
+  impala:
+    image: apache/kudu:impala-latest
+    container_name: impala
+    ports: 
+      - "21000:21000"
+      - "21050:21050"
+      - "25000:25000"
+      - "25010:25010"
+      - "25020:25020"
+    volumes:
+      - ~/bdi/resources/:/bdi/resources/
+    networks:
+      - net_lucas
+
 
 volumes:
   kudu-master-1:
