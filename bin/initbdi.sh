@@ -26,6 +26,15 @@ if [ -d ~/myBdApp ]; then
       cp ~/bdi/resources/sbt-1.4.5.tgz ~/myBdApp/resources
       printf "Done.\n"
    fi
+   if [ ! -d ~/myBdApp/lib ]; then
+     mkdir -p ~/myBdApp/lib
+   fi
+   if [ ! -f ~/myBdApp/lib/mysql-connector-java-8.0.22.jar ]; then
+      cp ~/bdi/resources/mysql-connector-java-8.0.22.jar ~/myBdApp/lib
+   fi
+   if [ ! -f ~/myBdApp/lib/kudu-spark3_2.12-1.13.0.7.1.5.2-1.jar ]; then
+      cp ~/bdi/resources/kudu-spark3_2.12-1.13.0.7.1.5.2-1.jar ~/myBdApp/lib
+   fi
 else
   printf "Download myBdApp..."
   cd
@@ -35,6 +44,9 @@ else
   mkdir -p ~/myBdApp/resources
   cp ~/bdi/resources/hadoop-3.2.1.tar.gz ~/myBdApp/resources
   cp ~/bdi/resources/sbt-1.4.5.tgz ~/myBdApp/resources
+  mkdir -p ~/myBdApp/lib
+  cp ~/bdi/resources/mysql-connector-java-8.0.22.jar ~/myBdApp/lib
+  cp ~/bdi/resources/kudu-spark3_2.12-1.13.0.7.1.5.2-1.jar ~/myBdApp/lib
   printf "Done.\n"
 fi
 
